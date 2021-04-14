@@ -1,9 +1,38 @@
 {
     "name": "ejetar/bandwidth-recorder",
-    "description": "",
+    "description": "This is a magical PHP CLI script that records the bandwidth per process/user for a certain period of time, through Nethogs! \uD83E\uDDD9",
+    "homepage": "https://ejetar.com/projects/bandwidth-recorder",
+    "type": "project",
+    "license": "MIT",
+    "version": "1.0.0",
+    "authors": [
+        {
+            "name": "Guilherme Almeida Girardi",
+            "email": "guilhermeagirardi@gmail.com",
+            "homepage": "https://guilhermegirardi.com",
+            "role": "Developer"
+        }
+    ],
+    "keywords": [
+        "php",
+        "nethogs",
+        "bandwidth",
+        "traffic",
+        "monitor",
+        "network",
+        "tracemode",
+        "trace",
+        "process",
+        "iftop",
+        "vnstat",
+        "iptraf-ng",
+        "netstat"
+    ],
     "require": {
         "php": ">=7.4",
         "nategood/commando": "^0.4.0",
         "guzzlehttp/promises": "^1.4"
-    }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }
