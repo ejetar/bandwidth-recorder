@@ -1,0 +1,9 @@
+{
+    "name": "ejetar/bandwidth-recorder",
+    "description": "",
+    "require": {
+        "php": ">=7.4",
+        "nategood/commando": "^0.4.0",
+        "guzzlehttp/promises": "^1.4"
+    }
+}

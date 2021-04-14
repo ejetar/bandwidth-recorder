@@ -1,0 +1,66 @@
+#!/usr/bin/env php
+<?php
+/**
+ * @author Guilherme Almeida Girardi <guilhermeagirardi@gmail.com>
+ * @copyright Copyright (c) 2021, Ejetar
+ * @version 1.0.0
+ *
+ * This is the main script of the package, it is responsible for running nethogs tracemode
+ * for X time interval.
+ *
+ * If you do not enter the output path, /var/log/nethogs/YYYY-MM-DD_H.log" will be used
+ * by default.
+ *
+ * The default interval is set to 3600 seconds, that is, one hour.
+ *
+ * The default mode chosen for nethogs tracemode is 2, that is, result in bytes.
+ *
+ * Return "OK" at the end of the run, if all goes well.
+ */
+
+//Load Composer
+require_once 'vendor/autoload.php';
+
+use GuzzleHttp\Promise\Promise;
+
+$menu = new Commando\Command();
+
+//Output path
+$menu->option()
+    ->require()
+  	->default("/var/log/nethogs/".date("Y-m-d_H").".log")
+    ->describedAs('Output path.');
+
+//Interval in seconds
+$menu->option('i')
+    ->aka('interval')
+  	->default(3600)
+	->must(function(int $seconds) {
+		return is_int($seconds);
+	})
+	->describedAs('Capture time in seconds.');
+
+$menu->option('v')
+	->aka('view-mode')
+	->must(function($value) {
+		return in_array($value, [0,1,2,3]);
+	})
+	->default(2)
+	->describedAs('View mode (0 = KB/s, 1 = total KB, 2 = total B, 3 = total MB).');
+
+//Get the absolute path of the "last" script
+$last = realpath('./src/last');
+
+$promiseNethogs = new Promise(function () use (&$promiseNethogs, $last, $menu) {
+  	shell_exec("/usr/sbin/nethogs -t -v {$menu['view-mode']} | $last {$menu[0]}");
+});
+
+$promiseSleep = new Promise(function () use (&$promiseSleep, $promiseNethogs, $menu) {
+  	sleep($menu['interval']);
+  	$promiseNethogs->resolve('OK');
+	$promiseSleep->cancel();
+});
+
+echo $promiseNethogs->wait();
+
+exit(0);

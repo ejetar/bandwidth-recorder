@@ -1,0 +1,30 @@
+#!/usr/bin/env php
+<?php
+/**
+ * @author Guilherme Almeida Girardi <guilhermeagirardi@gmail.com>
+ * @copyright Copyright (c) 2021, Ejetar
+ * @version 1.0.0
+ *
+ * This script is used to process all the tracemode output from the nethogs command, and
+ * get only the last refresh.
+ *
+ * The first argument, is the path where the result will be printed.
+ */
+
+if (!isset($argv[1]) || empty($argv[1]))
+	throw new \Exception("You need to inform the file path so that we can print the output.");
+
+$stack = "";
+while($line = fgets(STDIN)) {
+	//If it's an empty line
+    if ($line === "\n") {
+    	file_put_contents($argv[1], $stack);
+      	$stack = "";
+
+	//If it's a line that says "Refreshing:"
+    } else if ($line === "Refreshing:\n") {
+    	//Ignore. Jump.
+
+    } else
+      $stack .= $line;
+}
