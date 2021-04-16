@@ -21,14 +21,14 @@
 //Load Composer
 require_once 'vendor/autoload.php';
 
-use GuzzleHttp\Promise\Promise;
+use Spatie\Async\Pool;
 
 $menu = new Commando\Command();
 
 //Output path
 $menu->option()
     ->require()
-  	->default("/var/log/nethogs/".date("Y-m-d_H").".log")
+  	->default("/var/log/bandwidth/".date("Y-m-d_H").".log")
     ->describedAs('Output path.');
 
 //Interval in seconds
@@ -48,19 +48,21 @@ $menu->option('v')
 	->default(2)
 	->describedAs('View mode (0 = KB/s, 1 = total KB, 2 = total B, 3 = total MB).');
 
-//Get the absolute path of the "last" script
 $last = realpath('./src/last');
+$PIDFile = '/tmp/bandwidth-recorder.pid';
+$cmd = 'echo $$ > '.$PIDFile.'; /usr/sbin/nethogs -t -v '.$menu['view-mode'].' | '.$last.' '.$menu[0];
 
-$promiseNethogs = new Promise(function () use (&$promiseNethogs, $last, $menu) {
-  	shell_exec("/usr/sbin/nethogs -t -v {$menu['view-mode']} | $last {$menu[0]}");
-});
+$pool = Pool::create()
+	->timeout((int) $menu['interval']);
 
-$promiseSleep = new Promise(function () use (&$promiseSleep, $promiseNethogs, $menu) {
-  	sleep($menu['interval']);
-  	$promiseNethogs->resolve('OK');
-	$promiseSleep->cancel();
-});
+$pool
+	->add(function() use($cmd) {
+		shell_exec($cmd);
+	});
 
-echo $promiseNethogs->wait();
+$pool->wait();
+
+//kills the process tree
+shell_exec("pkill -TERM -P ".file_get_contents($PIDFile));
 
 exit(0);

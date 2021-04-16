@@ -3,4 +3,4 @@ vendor
 node_modules
 composer.lock
 .exclude-files
-rsync.sh
+rsync

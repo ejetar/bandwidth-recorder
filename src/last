@@ -19,7 +19,7 @@ while($line = fgets(STDIN)) {
 	//If it's an empty line
     if ($line === "\n") {
     	file_put_contents($argv[1], $stack);
-      	$stack = "";
+      	$stack = "ls sr	";
 
 	//If it's a line that says "Refreshing:"
     } else if ($line === "Refreshing:\n") {

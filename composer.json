@@ -31,7 +31,12 @@
     "require": {
         "php": ">=7.4",
         "nategood/commando": "^0.4.0",
-        "guzzlehttp/promises": "^1.4"
+        "spatie/async": "^1.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ejetar\\BandwidthReceiver\\": "src"
+        }
     },
     "minimum-stability": "stable",
     "prefer-stable": true
